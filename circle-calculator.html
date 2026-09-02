@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Circle Calculator with Conversion Table</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f4f4f9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .calculator-container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 500px;
+        }
+        h2 {
+            text-align: center;
+            color: #333;
+            margin-top: 0;
+        }
+        .unit-group {
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        select {
+            padding: 8px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        .inputs-row {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .input-group {
+            flex: 1;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #555;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        .input-wrapper {
+            display: flex;
+            align-items: center;
+        }
+        input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px 0 0 6px;
+            box-sizing: border-box;
+            font-size: 15px;
+            border-right: none;
+        }
+        input[type="number"]:focus {
+            outline: none;
+            border-color: #0066cc;
+            box-shadow: 0 0 5px rgba(0, 102, 204, 0.2);
+        }
+        .unit-label {
+            background-color: #eee;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 0 6px 6px 0;
+            color: #666;
+            font-size: 14px;
+            min-width: 30px;
+            text-align: center;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: right;
+        }
+        th {
+            background-color: #f8f9fa;
+            text-align: center;
+            color: #333;
+        }
+        td:first-child {
+            text-align: left;
+            font-weight: bold;
+            background-color: #f8f9fa;
+            color: #555;
+        }
+        .note {
+            font-size: 12px;
+            color: #888;
+            text-align: center;
+            margin-top: 15px;
+            margin-bottom: 0;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="calculator-container">
+        <h2>Circle Calculator</h2>
+        
+        <!-- Wrapped in a form to prevent accidental page reloads when hitting Enter -->
+        <form id="calc-form" onsubmit="event.preventDefault();">
+            <div class="unit-group">
+                <label for="unit-selector" style="margin-bottom: 0;">Base Input Unit:</label>
+                <select id="unit-selector">
+                    <option value="mm">Millimeters (mm)</option>
+                    <option value="cm" selected>Centimeters (cm)</option>
+                    <option value="m">Meters (m)</option>
+                    <option value="in">Inches (in)</option>
+                    <option value="ft">Feet (ft)</option>
+                </select>
+            </div>
+
+            <div class="inputs-row">
+                <div class="input-group">
+                    <label for="radius">Radius</label>
+                    <div class="input-wrapper">
+                        <input type="number" id="radius" placeholder="0" step="any">
+                        <span class="unit-label">cm</span>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label for="diameter">Diameter</label>
+                    <div class="input-wrapper">
+                        <input type="number" id="diameter" placeholder="0" step="any">
+                        <span class="unit-label">cm</span>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label for="circumference">Circumference</label>
+                    <div class="input-wrapper">
+                        <input type="number" id="circumference" placeholder="0" step="any">
+                        <span class="unit-label">cm</span>
+                    </div>
+                </div>
+            </div>
+        </form>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Unit</th>
+                    <th>Radius</th>
+                    <th>Diameter</th>
+                    <th>Circumference</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>mm</td>
+                    <td id="r-mm">-</td>
+                    <td id="d-mm">-</td>
+                    <td id="c-mm">-</td>
+                </tr>
+                <tr>
+                    <td>cm</td>
+                    <td id="r-cm">-</td>
+                    <td id="d-cm">-</td>
+                    <td id="c-cm">-</td>
+                </tr>
+                <tr>
+                    <td>m</td>
+                    <td id="r-m">-</td>
+                    <td id="d-m">-</td>
+                    <td id="c-m">-</td>
+                </tr>
+                <tr>
+                    <td>in</td>
+                    <td id="r-in">-</td>
+                    <td id="d-in">-</td>
+                    <td id="c-in">-</td>
+                </tr>
+                <tr>
+                    <td>ft</td>
+                    <td id="r-ft">-</td>
+                    <td id="d-ft">-</td>
+                    <td id="c-ft">-</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <p class="note">Type in any box above. The table will instantly show all conversions.</p>
+    </div>
+
+    <script>
+        // Get the DOM elements safely
+        var radiusInput = document.getElementById('radius');
+        var diameterInput = document.getElementById('diameter');
+        var circumferenceInput = document.getElementById('circumference');
+        var unitSelector = document.getElementById('unit-selector');
+        var unitLabels = document.querySelectorAll('.unit-label');
+
+        // Conversion rates relative to 1 meter (quotes added for older browser safety)
+        var conversionToMeters = {
+            "mm": 0.001,
+            "cm": 0.01,
+            "m": 1,
+            "in": 0.0254,
+            "ft": 0.3048
+        };
+
+        var currentUnit = unitSelector.value;
+
+        // Rounding function that handles empty inputs gracefully
+        function formatNumber(num) {
+            if (isNaN(num) || num === null || num === '') return '';
+            // Round to 4 decimal places
+            return Math.round(num * 10000) / 10000; 
+        }
+
+        function formatForTable(num) {
+            if (isNaN(num) || num === null || num === '') return '-';
+            return Math.round(num * 10000) / 10000;
+        }
+
+        // Function to update the complete table based on a radius given in METERS
+        function updateTable(radiusInMeters) {
+            var units = ["mm", "cm", "m", "in", "ft"];
+            
+            for (var i = 0; i < units.length; i++) {
+                var unit = units[i];
+                
+                if (isNaN(radiusInMeters)) {
+                    document.getElementById('r-' + unit).textContent = '-';
+                    document.getElementById('d-' + unit).textContent = '-';
+                    document.getElementById('c-' + unit).textContent = '-';
+                } else {
+                    var factor = 1 / conversionToMeters[unit];
+                    var r_unit = radiusInMeters * factor;
+                    var d_unit = r_unit * 2;
+                    var c_unit = 2 * Math.PI * r_unit;
+
+                    document.getElementById('r-' + unit).textContent = formatForTable(r_unit);
+                    document.getElementById('d-' + unit).textContent = formatForTable(d_unit);
+                    document.getElementById('c-' + unit).textContent = formatForTable(c_unit);
+                }
+            }
+        }
+
+        // --- Input Event Listeners (Using both 'input' and 'keyup' for maximum compatibility) ---
+        
+        function handleRadiusChange() {
+            var r = parseFloat(radiusInput.value);
+            if (!isNaN(r) && r >= 0) {
+                diameterInput.value = formatNumber(r * 2);
+                circumferenceInput.value = formatNumber(2 * Math.PI * r);
+                updateTable(r * conversionToMeters[currentUnit]);
+            } else {
+                diameterInput.value = '';
+                circumferenceInput.value = '';
+                updateTable(NaN);
+            }
+        }
+
+        function handleDiameterChange() {
+            var d = parseFloat(diameterInput.value);
+            if (!isNaN(d) && d >= 0) {
+                var r = d / 2;
+                radiusInput.value = formatNumber(r);
+                circumferenceInput.value = formatNumber(Math.PI * d);
+                updateTable(r * conversionToMeters[currentUnit]);
+            } else {
+                radiusInput.value = '';
+                circumferenceInput.value = '';
+                updateTable(NaN);
+            }
+        }
+
+        function handleCircumferenceChange() {
+            var c = parseFloat(circumferenceInput.value);
+            if (!isNaN(c) && c >= 0) {
+                var r = c / (2 * Math.PI);
+                radiusInput.value = formatNumber(r);
+                diameterInput.value = formatNumber(c / Math.PI);
+                updateTable(r * conversionToMeters[currentUnit]);
+            } else {
+                radiusInput.value = '';
+                diameterInput.value = '';
+                updateTable(NaN);
+            }
+        }
+
+        // Attach listeners
+        radiusInput.addEventListener('input', handleRadiusChange);
+        diameterInput.addEventListener('input', handleDiameterChange);
+        circumferenceInput.addEventListener('input', handleCircumferenceChange);
+
+        // --- Unit Conversion Logic ---
+        
+        unitSelector.addEventListener('change', function() {
+            var newUnit = this.value;
+            var conversionFactor = conversionToMeters[currentUnit] / conversionToMeters[newUnit];
+
+            // Convert existing input values if present
+            if (radiusInput.value !== '') {
+                radiusInput.value = formatNumber(parseFloat(radiusInput.value) * conversionFactor);
+                diameterInput.value = formatNumber(parseFloat(diameterInput.value) * conversionFactor);
+                circumferenceInput.value = formatNumber(parseFloat(circumferenceInput.value) * conversionFactor);
+            }
+
+            // Update the text labels using a traditional loop
+            for (var i = 0; i < unitLabels.length; i++) {
+                unitLabels[i].textContent = newUnit;
+            }
+
+            currentUnit = newUnit;
+            
+            // Re-trigger the math to update the table
+            if (radiusInput.value !== '') {
+                handleRadiusChange();
+            }
+        });
+    </script>
+
+</body>
+</html>
